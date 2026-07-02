@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Accounts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="topbar">
+    <a class="menu-btn" href="menu.html" aria-label="Menu">
+      <div class="bars"><span></span><span></span><span></span></div>
+      Menu
+    </a>
+    <div class="icon-row">
+      <a class="icon-btn" href="inbox.html" aria-label="Inbox">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B2D5C" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg>
+        Inbox
+      </a>
+      <a class="icon-btn" href="products.html" aria-label="Products">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B2D5C" stroke-width="1.7"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 4h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        Products
+      </a>
+      <a class="icon-btn" href="logout.html" aria-label="Log out">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B2D5C" stroke-width="1.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        Log out
+      </a>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-accounts">Accounts</button>
+    <button class="tab" id="tab-dashboard">Dashboard</button>
+  </div>
+
+  <!-- ACCOUNTS TAB -->
+  <div class="accounts-tab" id="accounts-view">
+
+    <div class="assistant-row reveal">
+      <div class="assistant-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A6" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>Hi, I'm Sage. How can I help?</span>
+      </div>
+      <a class="assistant-avatar" href="inbox.html">S<span class="badge">4</span></a>
+    </div>
+
+    <div class="card-group reveal">
+      <a class="link-row" href="profile.html">
+        <span class="label">Hello, Zihao</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <!-- Banking -->
+    <div class="section reveal" id="banking-section">
+      <div class="section-top"></div>
+      <div class="section-header" data-toggle="banking-body">
+        <h2>Banking</h2>
+        <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+      </div>
+      <div id="banking-body">
+        <div class="institution"><span class="fdic-badge">FDIC</span> Meridian Bank</div>
+        <div class="insured-note">Deposits insured by the FDIC up to applicable limits — backed by the full faith and credit of the U.S. government.</div>
+
+        <a class="account-row" href="account-detail.html">
+          <div class="account-name">Everyday Checking<span class="acct-no">···· 6473</span></div>
+          <div class="amount-block">
+            <span class="amount">$9,421.97</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <a class="promo reveal" href="offers.html" style="display:flex;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="1.8"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4.5L6 21l1.5-7.5L2 9h7l3-7z"/></svg>
+      <div>
+        <h3>There's more to explore</h3>
+        <p>See personalized offers, manage alerts, and check your credit score — all from your account overview.</p>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div class="dash" id="dashboard-view">
+    <div class="dash-card reveal">
+      <h3>TOTAL NET WORTH</h3>
+      <div class="net-amount">$9,421.97</div>
+      <div class="bars-row" id="net-bars">
+        <div class="bar-col"><div class="bar" data-h="42%"></div><span>Jan</span></div>
+        <div class="bar-col"><div class="bar" data-h="55%"></div><span>Feb</span></div>
+        <div class="bar-col"><div class="bar" data-h="48%"></div><span>Mar</span></div>
+        <div class="bar-col"><div class="bar" data-h="63%"></div><span>Apr</span></div>
+        <div class="bar-col"><div class="bar" data-h="58%"></div><span>May</span></div>
+        <div class="bar-col"><div class="bar" data-h="71%"></div><span>Jun</span></div>
+      </div>
+    </div>
+    <div class="dash-card reveal">
+      <h3>CASH FLOW THIS MONTH</h3>
+      <div class="net-amount" style="font-size:22px; color:#0B2D5C;">+$642.30</div>
+      <p style="margin:0; font-size:13.5px; color:var(--gray);">Income exceeded spending this month — keep it up.</p>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <a class="nav-item active" id="nav-accounts" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B2D5C" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.4-3 1.8-3 .9-3 1.9 1 1.8 3 1.8 3-.8 3-1.8"/></svg>
+      Accounts
+    </a>
+    <a class="nav-item" href="pay-transfer.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6066" stroke-width="1.8"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>
+      Pay &amp; Transfer
+    </a>
+    <a class="nav-item" href="deposit-checks.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6066" stroke-width="1.8"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+      Deposit Checks
+    </a>
+    <a class="nav-item" href="invest.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6066" stroke-width="1.8"><path d="M12 2v10l8 4"/><circle cx="12" cy="12" r="9"/></svg>
+      Invest
+    </a>
+  </div>
+
+</div>
+
+<script>
+  const tabAccounts = document.getElementById('tab-accounts');
+  const tabDashboard = document.getElementById('tab-dashboard');
+  const accountsView = document.getElementById('accounts-view');
+  const dashboardView = document.getElementById('dashboard-view');
+
+  tabAccounts.addEventListener('click', () => {
+    tabAccounts.classList.add('active');
+    tabDashboard.classList.remove('active');
+    accountsView.classList.remove('hidden');
+    dashboardView.classList.remove('active');
+  });
+
+  tabDashboard.addEventListener('click', () => {
+    tabDashboard.classList.add('active');
+    tabAccounts.classList.remove('active');
+    accountsView.classList.add('hidden');
+    dashboardView.classList.add('active');
+    requestAnimationFrame(() => {
+      document.querySelectorAll('#net-bars .bar').forEach(bar => { bar.style.height = bar.dataset.h; });
+    });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(header=>{
+    header.addEventListener('click', () => {
+      const body = document.getElementById(header.getAttribute('data-toggle'));
+      const chev = header.querySelector('.chev');
+      const collapsed = body.style.display === 'none';
+      body.style.display = collapsed ? 'block' : 'none';
+      chev.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  });
+</script>
+
+</body>
+</html>
