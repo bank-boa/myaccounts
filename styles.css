@@ -362,13 +362,13 @@ button{ font-family:'Inter', Arial, sans-serif; }
   padding:0 18px 10px;
 }
 .txn-row{
-  display:flex; justify-content:space-between; align-items:flex-start;
+  display:grid; grid-template-columns:minmax(0,1fr) max-content; column-gap:12px; align-items:start;
   padding:14px 18px;
   border-bottom:1px solid var(--line);
 }
 .txn-row:last-child{ border-bottom:none; }
-.txn-row > div:first-child{ min-width:0; overflow-wrap:anywhere; padding-right:12px; }
-.txn-row > div:last-child{ flex-shrink:0; margin-left:auto; text-align:right; }
+.txn-row > div:first-child{ min-width:0; overflow-wrap:anywhere; word-break:break-word; }
+.txn-row > div:last-child{ min-width:0; text-align:right; }
 .txn-meta{ font-size:12.5px; color:var(--gray); font-weight:600; margin-bottom:3px; }
 .txn-name{ font-size:15.5px; font-weight:700; color:var(--ink); line-height:1.3; }
 .txn-amount{ font-size:19px; font-weight:800; color:var(--blue); text-align:right; white-space:nowrap; }
