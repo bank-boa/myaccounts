@@ -25,6 +25,8 @@
 .pos-value{ font-size:19px; font-weight:800; white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums; }
 .pos-chip{ display:inline-block; margin-top:6px; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:700; background:#E8EEF7; color:var(--blue); }
 .pos-chip.matured{ background:#FBE9EC; color:var(--red); }
+.pos-chip.new{ background:#E3F3EE; color:#1C7C63; }
+.pos-note{ margin-top:12px; padding:10px 12px; border-radius:10px; background:var(--bg); font-size:12.5px; color:var(--gray); line-height:1.4; }
 .pos-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
 .pos-grid .k{ display:block; font-size:12px; color:var(--gray); font-weight:600; }
 .pos-grid .v{ display:block; font-size:14.5px; font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums; }
@@ -117,6 +119,7 @@
       {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
       {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
       {description: "CAPITAL ONE NATL 4.50000% 10/05/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUS8", assetClass: "CD", quantity: 500, coupon: 4.500, maturity: "10/05/2027", callStatus: "Call Protected", price: 101.536, currentValue: 507.70, marketYield: 3.690},
+      {description: "ALLY BANK 4.25000% 10/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "02007GXY4", assetClass: "CD", quantity: 15000, coupon: 4.250, maturity: "10/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 15000.00, marketYield: 4.250, termYears: 1},
   ];
 
   function parseMaturityDate(value) {
@@ -181,57 +184,124 @@
     return days + (days === 1 ? " day left" : " days left");
   }
 
+  const ROLLOVER_YIELD_BUMP = 0.24;
+
+  function formatDate(date) {
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return mm + "/" + dd + "/" + date.getFullYear();
+  }
+
+  function formatQuantity(value) {
+    return value.toLocaleString("en-US", {maximumFractionDigits: 2});
+  }
+
+  // A matured position rolls its principal plus full-term accrued interest into a new
+  // 1-year position whose coupon and market yield are 0.24 higher.
+  function buildRollover(p, maturityDate, accrued) {
+    const newMaturity = new Date(maturityDate.getTime());
+    newMaturity.setFullYear(newMaturity.getFullYear() + 1);
+    const quantity = Math.round((p.quantity + accrued) * 100) / 100;
+    const coupon = Math.round((p.coupon + ROLLOVER_YIELD_BUMP) * 1000) / 1000;
+    const bank = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
+    return {
+      description: bank + " " + coupon.toFixed(5) + "% " + formatDate(newMaturity),
+      account: p.account, tag: p.tag, cusip: "ROLLOVER", assetClass: p.assetClass,
+      quantity: quantity, coupon: coupon, maturity: formatDate(newMaturity),
+      callStatus: p.callStatus, price: 100.000, currentValue: quantity,
+      marketYield: Math.round((p.marketYield + ROLLOVER_YIELD_BUMP) * 1000) / 1000,
+      startDate: new Date(maturityDate.getTime()),
+      rolledFrom: p.cusip
+    };
+  }
+
+  function analyze(p, today) {
+    const maturityDate = parseMaturityDate(p.maturity);
+    if (!maturityDate) return null;
+    let startDate = p.startDate;
+    if (!startDate && p.termYears) {
+      startDate = new Date(maturityDate.getTime());
+      startDate.setFullYear(startDate.getFullYear() - p.termYears);
+    }
+    if (!startDate) startDate = getPositionStartDate(maturityDate, p.cusip);
+    const elapsedYears = Math.max(0, (today - startDate) / MS_PER_DAY / 365.25);
+    const maxYears = Math.max(0, (maturityDate - startDate) / MS_PER_DAY / 365.25);
+    const durationYears = Math.min(elapsedYears, maxYears);
+    return {
+      maturityDate: maturityDate,
+      durationYears: durationYears,
+      accrued: calculateAccruedInterest(p.quantity, p.coupon, durationYears),
+      next12: calculateNext12MonthsInterest(p.quantity, p.coupon, maturityDate, today),
+      remaining: formatRemaining(maturityDate, today)
+    };
+  }
+
+  function positionCard(p, a, opts) {
+    const name = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
+    const chipClass = a.remaining === "Matured" ? " matured" : (opts.isNew ? " new" : "");
+    const chipText = opts.isNew ? "New 1-yr rollover &middot; " + a.remaining : a.remaining;
+    const note = opts.rolledInto
+      ? '<div class="pos-note">Principal + accrued interest rolled into a ' + opts.rolledInto.coupon.toFixed(3) +
+        '% CD maturing ' + opts.rolledInto.maturity + ' (' + formatCurrency(opts.rolledInto.quantity) + ').</div>'
+      : (opts.isNew
+        ? '<div class="pos-note">Rolled over from ' + opts.isNew + ' &middot; coupon and yield +' + ROLLOVER_YIELD_BUMP.toFixed(2) + '.</div>'
+        : '');
+    return '<div class="pos-card reveal">' +
+        '<div class="pos-head">' +
+          '<div>' +
+            '<div class="pos-name">' + name + '</div>' +
+            '<div class="pos-sub">' + p.assetClass + ' &middot; ' + p.cusip + '</div>' +
+            '<span class="pos-chip' + chipClass + '">' + chipText + '</span>' +
+          '</div>' +
+          '<div class="pos-value">' + formatCurrency(p.currentValue) + '</div>' +
+        '</div>' +
+        '<div class="pos-grid">' +
+          '<div><span class="k">Maturity</span><span class="v">' + p.maturity + '</span></div>' +
+          '<div><span class="k">Coupon</span><span class="v">' + p.coupon.toFixed(3) + '%</span></div>' +
+          '<div><span class="k">Quantity</span><span class="v">' + formatQuantity(p.quantity) + '</span></div>' +
+          '<div><span class="k">Market yield</span><span class="v">' + p.marketYield.toFixed(3) + '%</span></div>' +
+          '<div><span class="k">Accrued interest</span><span class="v credit">' + formatCurrency(a.accrued) + '</span></div>' +
+          '<div><span class="k">Duration</span><span class="v">' + formatYears(a.durationYears) + ' yrs</span></div>' +
+          '<div><span class="k">3rd party price</span><span class="v">' + p.price.toFixed(3) + '</span></div>' +
+          '<div><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
+        '</div>' +
+        note +
+      '</div>';
+  }
+
   function render() {
     const today = getTodayDate();
-    let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, yieldWeighted = 0;
+    let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, yieldWeighted = 0, activeCount = 0;
     let html = "";
 
-    POSITIONS.forEach(function (p) {
-      const maturityDate = parseMaturityDate(p.maturity);
-      if (!maturityDate) return;
-
-      const startDate = getPositionStartDate(maturityDate, p.cusip);
-      const elapsedYears = Math.max(0, (today - startDate) / MS_PER_DAY / 365.25);
-      const maxYears = Math.max(0, (maturityDate - startDate) / MS_PER_DAY / 365.25);
-      const durationYears = Math.min(elapsedYears, maxYears);
-      const accrued = calculateAccruedInterest(p.quantity, p.coupon, durationYears);
-      const next12 = calculateNext12MonthsInterest(p.quantity, p.coupon, maturityDate, today);
-
+    function addToTotals(p, a) {
       totalPar += p.quantity;
       totalValue += p.currentValue;
-      totalInterest += next12;
-      durationWeighted += durationYears * p.quantity;
+      totalInterest += a.next12;
+      durationWeighted += a.durationYears * p.quantity;
       yieldWeighted += p.marketYield * p.currentValue;
+      activeCount++;
+    }
 
-      const remaining = formatRemaining(maturityDate, today);
-      const name = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
+    POSITIONS.forEach(function (p) {
+      const a = analyze(p, today);
+      if (!a) return;
 
-      html +=
-        '<div class="pos-card reveal">' +
-          '<div class="pos-head">' +
-            '<div>' +
-              '<div class="pos-name">' + name + '</div>' +
-              '<div class="pos-sub">' + p.assetClass + ' &middot; ' + p.cusip + '</div>' +
-              '<span class="pos-chip' + (remaining === "Matured" ? ' matured' : '') + '">' + remaining + '</span>' +
-            '</div>' +
-            '<div class="pos-value">' + formatCurrency(p.currentValue) + '</div>' +
-          '</div>' +
-          '<div class="pos-grid">' +
-            '<div><span class="k">Maturity</span><span class="v">' + p.maturity + '</span></div>' +
-            '<div><span class="k">Coupon</span><span class="v">' + p.coupon.toFixed(3) + '%</span></div>' +
-            '<div><span class="k">Quantity</span><span class="v">' + p.quantity.toLocaleString("en-US") + '</span></div>' +
-            '<div><span class="k">Market yield</span><span class="v">' + p.marketYield.toFixed(3) + '%</span></div>' +
-            '<div><span class="k">Accrued interest</span><span class="v credit">' + formatCurrency(accrued) + '</span></div>' +
-            '<div><span class="k">Duration</span><span class="v">' + formatYears(durationYears) + ' yrs</span></div>' +
-            '<div><span class="k">3rd party price</span><span class="v">' + p.price.toFixed(3) + '</span></div>' +
-            '<div><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
-          '</div>' +
-        '</div>';
+      if (a.remaining === "Matured") {
+        const rolled = buildRollover(p, a.maturityDate, a.accrued);
+        const ra = analyze(rolled, today);
+        html += positionCard(p, a, {rolledInto: rolled});
+        html += positionCard(rolled, ra, {isNew: p.cusip});
+        addToTotals(rolled, ra);
+      } else {
+        html += positionCard(p, a, {});
+        addToTotals(p, a);
+      }
     });
 
     document.getElementById("positions-list").innerHTML = html;
     document.getElementById("sum-value").textContent = formatCurrency(totalValue);
-    document.getElementById("sum-count").textContent = POSITIONS.length;
+    document.getElementById("sum-count").textContent = activeCount;
     document.getElementById("sum-par").textContent = formatNumber(totalPar);
     document.getElementById("sum-interest").textContent = formatCurrency(totalInterest);
     document.getElementById("sum-yield").textContent = (totalValue > 0 ? yieldWeighted / totalValue : 0).toFixed(3) + "%";
