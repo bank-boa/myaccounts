@@ -71,9 +71,8 @@
       <div class="net-amount" id="sum-value">$0.00</div>
       <div class="sub">Current value</div>
       <div class="summary-calculations">
-        <div class="summary-tile"><span class="summary-title">Total par value</span><span class="summary-value" id="sum-par">0.00</span></div>
         <div class="summary-tile"><span class="summary-title">Next 12 months interest</span><span class="summary-value" id="sum-interest">$0.00</span></div>
-        <div class="summary-tile" style="grid-column:1/-1;"><span class="summary-title">Average duration (years)</span><span class="summary-value" id="sum-duration">0.000</span></div>
+        <div class="summary-tile"><span class="summary-title">Average duration (years)</span><span class="summary-value" id="sum-duration">0.000</span></div>
       </div>
     </div>
 
@@ -258,7 +257,7 @@
           '<div><span class="k">Quantity</span><span class="v">' + formatQuantity(p.quantity) + '</span></div>' +
           '<div><span class="k">Accrued interest</span><span class="v credit">' + formatCurrency(a.accrued) + '</span></div>' +
           '<div><span class="k">Duration</span><span class="v">' + formatYears(a.durationYears) + ' yrs</span></div>' +
-          '<div style="grid-column:1/-1;"><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
+          '<div><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
         '</div>' +
         note +
       '</div>';
@@ -267,15 +266,7 @@
   function render() {
     const today = getTodayDate();
     let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, activeCount = 0;
-    let html = "";
-
-    function addToTotals(p, a) {
-      totalPar += p.quantity;
-      totalValue += p.currentValue;
-      totalInterest += a.next12;
-      durationWeighted += a.durationYears * p.quantity;
-      activeCount++;
-    }
+    const entries = [];
 
     POSITIONS.forEach(function (p) {
       const a = analyze(p, today);
@@ -283,19 +274,28 @@
 
       if (a.remaining === "Matured") {
         const rolled = buildRollover(p, a.maturityDate, a.accrued);
-        const ra = analyze(rolled, today);
-        html += positionCard(rolled, ra, {isNew: {cusip: p.cusip, maturity: p.maturity, quantity: p.quantity, accrued: a.accrued}});
-        addToTotals(rolled, ra);
+        entries.push({p: rolled, a: analyze(rolled, today),
+          opts: {isNew: {cusip: p.cusip, maturity: p.maturity, quantity: p.quantity, accrued: a.accrued}}});
       } else {
-        html += positionCard(p, a, {});
-        addToTotals(p, a);
+        entries.push({p: p, a: a, opts: {}});
       }
+    });
+
+    entries.sort(function (x, y) { return x.a.maturityDate - y.a.maturityDate; });
+
+    let html = "";
+    entries.forEach(function (e) {
+      totalPar += e.p.quantity;
+      totalValue += e.p.currentValue;
+      totalInterest += e.a.next12;
+      durationWeighted += e.a.durationYears * e.p.quantity;
+      activeCount++;
+      html += positionCard(e.p, e.a, e.opts);
     });
 
     document.getElementById("positions-list").innerHTML = html;
     document.getElementById("sum-value").textContent = formatCurrency(totalValue);
     document.getElementById("sum-count").textContent = activeCount;
-    document.getElementById("sum-par").textContent = formatNumber(totalPar);
     document.getElementById("sum-interest").textContent = formatCurrency(totalInterest);
     document.getElementById("sum-duration").textContent = formatYears(totalPar > 0 ? durationWeighted / totalPar : 0);
   }
