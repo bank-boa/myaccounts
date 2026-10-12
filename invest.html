@@ -73,8 +73,7 @@
       <div class="summary-calculations">
         <div class="summary-tile"><span class="summary-title">Total par value</span><span class="summary-value" id="sum-par">0.00</span></div>
         <div class="summary-tile"><span class="summary-title">Next 12 months interest</span><span class="summary-value" id="sum-interest">$0.00</span></div>
-        <div class="summary-tile"><span class="summary-title">Average yield</span><span class="summary-value" id="sum-yield">0.000%</span></div>
-        <div class="summary-tile"><span class="summary-title">Average duration (years)</span><span class="summary-value" id="sum-duration">0.000</span></div>
+        <div class="summary-tile" style="grid-column:1/-1;"><span class="summary-title">Average duration (years)</span><span class="summary-value" id="sum-duration">0.000</span></div>
       </div>
     </div>
 
@@ -107,19 +106,19 @@
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
   const POSITIONS = [
-      {description: "MORGAN STANLEY BK N 4.10000% 10/02/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61690DZ50", assetClass: "CD", quantity: 500, coupon: 4.100, maturity: "10/02/2026", callStatus: "Call Protected", price: 100.277, currentValue: 501.40, marketYield: 3.807},
-      {description: "MORGAN STANLEY 4.05000% 10/30/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61776NRG0", assetClass: "CD", quantity: 20000, coupon: 4.050, maturity: "10/30/2026", callStatus: "Call Protected", price: 100.248, currentValue: 20050.00, marketYield: 3.804},
-      {description: "GOLDMAN SACHS BK USA 4.00000% 12/31/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150VG37", assetClass: "CD", quantity: 63000, coupon: 4.000, maturity: "12/31/2026", callStatus: "Call Protected", price: 100.283, currentValue: 63176.40, marketYield: 3.754},
-      {description: "GOLDMAN SACHS BK USA 4.00000% 07/08/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V3D9", assetClass: "CD", quantity: 5192, coupon: 4.000, maturity: "07/08/2027", callStatus: "Call Protected", price: 100.060, currentValue: 5195.12, marketYield: 3.877},
-      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 1839, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 1839.00, marketYield: 4.000},
-      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 541, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 541.00, marketYield: 4.000},
-      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 6000, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 6069.60, marketYield: 3.687},
-      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 1500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 1517.40, marketYield: 3.687},
-      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
-      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
-      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
-      {description: "CAPITAL ONE NATL 4.50000% 10/05/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUS8", assetClass: "CD", quantity: 500, coupon: 4.500, maturity: "10/05/2027", callStatus: "Call Protected", price: 101.536, currentValue: 507.70, marketYield: 3.690},
-      {description: "ALLY BANK 4.25000% 10/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "02007GXY4", assetClass: "CD", quantity: 15000, coupon: 4.250, maturity: "10/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 15000.00, marketYield: 4.250, termYears: 1},
+      {description: "MORGAN STANLEY BK N 4.10000% 10/02/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61690DZ50", assetClass: "CD", quantity: 500, coupon: 4.100, maturity: "10/02/2026", callStatus: "Call Protected", currentValue: 500},
+      {description: "MORGAN STANLEY 4.05000% 10/30/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61776NRG0", assetClass: "CD", quantity: 20000, coupon: 4.050, maturity: "10/30/2026", callStatus: "Call Protected", currentValue: 20000},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 12/31/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150VG37", assetClass: "CD", quantity: 63000, coupon: 4.000, maturity: "12/31/2026", callStatus: "Call Protected", currentValue: 63000},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 07/08/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V3D9", assetClass: "CD", quantity: 5192, coupon: 4.000, maturity: "07/08/2027", callStatus: "Call Protected", currentValue: 5192},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 1839, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", currentValue: 1839},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 541, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", currentValue: 541},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 6000, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", currentValue: 6000},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 1500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", currentValue: 1500},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", currentValue: 500},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", currentValue: 500},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", currentValue: 500},
+      {description: "CAPITAL ONE NATL 4.50000% 10/05/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUS8", assetClass: "CD", quantity: 500, coupon: 4.500, maturity: "10/05/2027", callStatus: "Call Protected", currentValue: 500},
+      {description: "ALLY BANK 4.25000% 10/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "02007GXY4", assetClass: "CD", quantity: 15000, coupon: 4.250, maturity: "10/12/2027", callStatus: "Call Protected", currentValue: 15000, termYears: 1},
   ];
 
   function parseMaturityDate(value) {
@@ -184,7 +183,7 @@
     return days + (days === 1 ? " day left" : " days left");
   }
 
-  const ROLLOVER_YIELD_BUMP = 0.24;
+  const ROLLOVER_COUPON_BUMP = 0.24;
 
   function formatDate(date) {
     const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -197,19 +196,18 @@
   }
 
   // A matured position rolls its principal plus full-term accrued interest into a new
-  // 1-year position whose coupon and market yield are 0.24 higher.
+  // 1-year position whose coupon is 0.24 higher.
   function buildRollover(p, maturityDate, accrued) {
     const newMaturity = new Date(maturityDate.getTime());
     newMaturity.setFullYear(newMaturity.getFullYear() + 1);
     const quantity = Math.round((p.quantity + accrued) * 100) / 100;
-    const coupon = Math.round((p.coupon + ROLLOVER_YIELD_BUMP) * 1000) / 1000;
+    const coupon = Math.round((p.coupon + ROLLOVER_COUPON_BUMP) * 1000) / 1000;
     const bank = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
     return {
       description: bank + " " + coupon.toFixed(5) + "% " + formatDate(newMaturity),
       account: p.account, tag: p.tag, cusip: "ROLLOVER", assetClass: p.assetClass,
       quantity: quantity, coupon: coupon, maturity: formatDate(newMaturity),
-      callStatus: p.callStatus, price: 100.000, currentValue: quantity,
-      marketYield: Math.round((p.marketYield + ROLLOVER_YIELD_BUMP) * 1000) / 1000,
+      callStatus: p.callStatus, currentValue: quantity,
       startDate: new Date(maturityDate.getTime()),
       rolledFrom: p.cusip
     };
@@ -239,13 +237,12 @@
   function positionCard(p, a, opts) {
     const name = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
     const chipClass = a.remaining === "Matured" ? " matured" : (opts.isNew ? " new" : "");
-    const chipText = opts.isNew ? "New 1-yr rollover &middot; " + a.remaining : a.remaining;
-    const note = opts.rolledInto
-      ? '<div class="pos-note">Principal + accrued interest rolled into a ' + opts.rolledInto.coupon.toFixed(3) +
-        '% CD maturing ' + opts.rolledInto.maturity + ' (' + formatCurrency(opts.rolledInto.quantity) + ').</div>'
-      : (opts.isNew
-        ? '<div class="pos-note">Rolled over from ' + opts.isNew + ' &middot; coupon and yield +' + ROLLOVER_YIELD_BUMP.toFixed(2) + '.</div>'
-        : '');
+    const chipText = opts.isNew ? "1-yr rollover &middot; " + a.remaining : a.remaining;
+    const r = opts.isNew;
+    const note = r
+      ? '<div class="pos-note">Rolled over from ' + r.cusip + ' (matured ' + r.maturity + '): ' + formatCurrency(r.quantity) +
+        ' principal + ' + formatCurrency(r.accrued) + ' accrued interest. Coupon +' + ROLLOVER_COUPON_BUMP.toFixed(2) + '.</div>'
+      : '';
     return '<div class="pos-card reveal">' +
         '<div class="pos-head">' +
           '<div>' +
@@ -259,11 +256,9 @@
           '<div><span class="k">Maturity</span><span class="v">' + p.maturity + '</span></div>' +
           '<div><span class="k">Coupon</span><span class="v">' + p.coupon.toFixed(3) + '%</span></div>' +
           '<div><span class="k">Quantity</span><span class="v">' + formatQuantity(p.quantity) + '</span></div>' +
-          '<div><span class="k">Market yield</span><span class="v">' + p.marketYield.toFixed(3) + '%</span></div>' +
           '<div><span class="k">Accrued interest</span><span class="v credit">' + formatCurrency(a.accrued) + '</span></div>' +
           '<div><span class="k">Duration</span><span class="v">' + formatYears(a.durationYears) + ' yrs</span></div>' +
-          '<div><span class="k">3rd party price</span><span class="v">' + p.price.toFixed(3) + '</span></div>' +
-          '<div><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
+          '<div style="grid-column:1/-1;"><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
         '</div>' +
         note +
       '</div>';
@@ -271,7 +266,7 @@
 
   function render() {
     const today = getTodayDate();
-    let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, yieldWeighted = 0, activeCount = 0;
+    let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, activeCount = 0;
     let html = "";
 
     function addToTotals(p, a) {
@@ -279,7 +274,6 @@
       totalValue += p.currentValue;
       totalInterest += a.next12;
       durationWeighted += a.durationYears * p.quantity;
-      yieldWeighted += p.marketYield * p.currentValue;
       activeCount++;
     }
 
@@ -290,8 +284,7 @@
       if (a.remaining === "Matured") {
         const rolled = buildRollover(p, a.maturityDate, a.accrued);
         const ra = analyze(rolled, today);
-        html += positionCard(p, a, {rolledInto: rolled});
-        html += positionCard(rolled, ra, {isNew: p.cusip});
+        html += positionCard(rolled, ra, {isNew: {cusip: p.cusip, maturity: p.maturity, quantity: p.quantity, accrued: a.accrued}});
         addToTotals(rolled, ra);
       } else {
         html += positionCard(p, a, {});
@@ -304,7 +297,6 @@
     document.getElementById("sum-count").textContent = activeCount;
     document.getElementById("sum-par").textContent = formatNumber(totalPar);
     document.getElementById("sum-interest").textContent = formatCurrency(totalInterest);
-    document.getElementById("sum-yield").textContent = (totalValue > 0 ? yieldWeighted / totalValue : 0).toFixed(3) + "%";
     document.getElementById("sum-duration").textContent = formatYears(totalPar > 0 ? durationWeighted / totalPar : 0);
   }
 
