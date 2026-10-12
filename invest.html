@@ -8,6 +8,28 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+.invest-total h3{ margin:0 0 4px; font-size:14px; color:var(--gray); font-weight:600; }
+.invest-total .net-amount{ margin:6px 0 4px; }
+.invest-total .sub{ font-size:13px; color:var(--gray); }
+.summary-calculations{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+.summary-tile{ background:var(--bg); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:4px; }
+.summary-title{ font-size:12px; color:var(--gray); font-weight:600; }
+.summary-value{ font-size:17px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; }
+.section-label{ display:flex; justify-content:space-between; align-items:baseline; margin:4px 2px 10px; font-size:13px; font-weight:600; color:var(--gray); }
+.section-label strong{ font-size:16px; color:var(--ink); font-weight:800; }
+.pos-card{ background:var(--white); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-bottom:12px; }
+.pos-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.pos-name{ font-size:15.5px; font-weight:700; line-height:1.3; color:var(--ink); }
+.pos-sub{ font-size:12.5px; color:var(--gray); font-weight:600; margin-top:3px; }
+.pos-value{ font-size:19px; font-weight:800; white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums; }
+.pos-chip{ display:inline-block; margin-top:6px; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:700; background:#E8EEF7; color:var(--blue); }
+.pos-chip.matured{ background:#FBE9EC; color:var(--red); }
+.pos-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+.pos-grid .k{ display:block; font-size:12px; color:var(--gray); font-weight:600; }
+.pos-grid .v{ display:block; font-size:14.5px; font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums; }
+.pos-grid .v.credit{ color:#1C7C63; }
+</style>
 </head>
 <body>
 <div class="phone">
@@ -38,16 +60,24 @@
       Accounts
     </a>
     <h1>Invest</h1>
-    <p>No holdings to show</p>
+    <p>Bond &amp; CD Positions</p>
   </div>
 
   <div class="content">
-    <div class="empty-state reveal">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0B2D5C" stroke-width="1.6"><path d="M3 17l5-6 4 3 5-7 4 5"/><circle cx="12" cy="12" r="10"/></svg>
-      <h3 style="color:var(--ink); font-size:18px; margin:4px 0 6px;">No investments yet</h3>
-      <p style="margin:0 0 18px;">You don't have any holdings or investment accounts at Meridian right now.</p>
-      <a class="btn-primary" href="#" style="display:flex; max-width:220px; margin:0 auto;">Start Investing</a>
+    <div class="dash-card invest-total reveal">
+      <h3>BOND &amp; CD POSITIONS</h3>
+      <div class="net-amount" id="sum-value">$0.00</div>
+      <div class="sub">Current value</div>
+      <div class="summary-calculations">
+        <div class="summary-tile"><span class="summary-title">Total par value</span><span class="summary-value" id="sum-par">0.00</span></div>
+        <div class="summary-tile"><span class="summary-title">Next 12 months interest</span><span class="summary-value" id="sum-interest">$0.00</span></div>
+        <div class="summary-tile"><span class="summary-title">Average yield</span><span class="summary-value" id="sum-yield">0.000%</span></div>
+        <div class="summary-tile"><span class="summary-title">Average duration (years)</span><span class="summary-value" id="sum-duration">0.000</span></div>
+      </div>
     </div>
+
+    <div class="section-label reveal"><strong>Positions</strong><span><span id="sum-count">0</span> &middot; by maturity</span></div>
+    <div id="positions-list"></div>
   </div>
 
   <div class="bottom-nav">
@@ -70,5 +100,157 @@
   </div>
 
 </div>
+<script>
+(function () {
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+  const POSITIONS = [
+      {description: "MORGAN STANLEY BK N 4.10000% 10/02/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61690DZ50", assetClass: "CD", quantity: 500, coupon: 4.100, maturity: "10/02/2026", callStatus: "Call Protected", price: 100.277, currentValue: 501.40, marketYield: 3.807},
+      {description: "MORGAN STANLEY 4.05000% 10/30/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "61776NRG0", assetClass: "CD", quantity: 20000, coupon: 4.050, maturity: "10/30/2026", callStatus: "Call Protected", price: 100.248, currentValue: 20050.00, marketYield: 3.804},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 12/31/2026", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150VG37", assetClass: "CD", quantity: 63000, coupon: 4.000, maturity: "12/31/2026", callStatus: "Call Protected", price: 100.283, currentValue: 63176.40, marketYield: 3.754},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 07/08/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V3D9", assetClass: "CD", quantity: 5192, coupon: 4.000, maturity: "07/08/2027", callStatus: "Call Protected", price: 100.060, currentValue: 5195.12, marketYield: 3.877},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 1839, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 1839.00, marketYield: 4.000},
+      {description: "GOLDMAN SACHS BK USA 4.00000% 08/12/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "38150V4M8", assetClass: "CD", quantity: 541, coupon: 4.000, maturity: "08/12/2027", callStatus: "Call Protected", price: 100.000, currentValue: 541.00, marketYield: 4.000},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 6000, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 6069.60, marketYield: 3.687},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 1500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 1517.40, marketYield: 3.687},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
+      {description: "CAPITAL ONE NATL 4.30000% 09/30/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUR0", assetClass: "CD", quantity: 500, coupon: 4.300, maturity: "09/30/2027", callStatus: "Call Protected", price: 101.155, currentValue: 505.80, marketYield: 3.687},
+      {description: "CAPITAL ONE NATL 4.50000% 10/05/2027", account: "Individual - Z07950813", tag: "HYPO", cusip: "14042RUS8", assetClass: "CD", quantity: 500, coupon: 4.500, maturity: "10/05/2027", callStatus: "Call Protected", price: 101.536, currentValue: 507.70, marketYield: 3.690},
+  ];
+
+  function parseMaturityDate(value) {
+    const parts = value.trim().split("/");
+    if (parts.length !== 3) return null;
+    const month = Number(parts[0]) - 1;
+    const day = Number(parts[1]);
+    const year = Number(parts[2]);
+    if (!Number.isFinite(month) || !Number.isFinite(day) || !Number.isFinite(year)) return null;
+    const date = new Date(year, month, day);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function formatCurrency(value) {
+    return "$" + value.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  function formatNumber(value) {
+    return value.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  function formatYears(value) {
+    return value.toFixed(3);
+  }
+
+  function getTodayDate() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  function getPositionStartDate(maturityDate, cusip) {
+    const startDate = new Date(maturityDate.getTime());
+    const isOneYearRollover = cusip === "38150V3D9" ||
+      (cusip === "38150V4M8" && maturityDate.getFullYear() === 2027);
+    const yearsBack = isOneYearRollover ? 1 : 2;
+    startDate.setFullYear(startDate.getFullYear() - yearsBack);
+    return startDate;
+  }
+
+  function calculateAccruedInterest(quantity, couponRate, durationYears) {
+    if (!Number.isFinite(quantity) || !Number.isFinite(couponRate) || !Number.isFinite(durationYears)) {
+      return 0;
+    }
+    const years = Math.max(0, durationYears);
+    const rate = couponRate / 100;
+    return quantity * (Math.pow(1 + rate, years) - 1);
+  }
+
+  function calculateNext12MonthsInterest(quantity, couponRate, maturityDate, today) {
+    if (today >= maturityDate) return 0;
+    const oneYearAhead = new Date(today.getTime());
+    oneYearAhead.setFullYear(oneYearAhead.getFullYear() + 1);
+    const endDate = maturityDate < oneYearAhead ? maturityDate : oneYearAhead;
+    const yearsInWindow = Math.max(0, (endDate - today) / MS_PER_DAY / 365.25);
+    return quantity * (couponRate / 100) * yearsInWindow;
+  }
+
+  function formatRemaining(maturityDate, today) {
+    const days = Math.round((maturityDate - today) / MS_PER_DAY);
+    if (days <= 0) return "Matured";
+    return days + (days === 1 ? " day left" : " days left");
+  }
+
+  function render() {
+    const today = getTodayDate();
+    let totalPar = 0, totalValue = 0, totalInterest = 0, durationWeighted = 0, yieldWeighted = 0;
+    let html = "";
+
+    POSITIONS.forEach(function (p) {
+      const maturityDate = parseMaturityDate(p.maturity);
+      if (!maturityDate) return;
+
+      const startDate = getPositionStartDate(maturityDate, p.cusip);
+      const elapsedYears = Math.max(0, (today - startDate) / MS_PER_DAY / 365.25);
+      const maxYears = Math.max(0, (maturityDate - startDate) / MS_PER_DAY / 365.25);
+      const durationYears = Math.min(elapsedYears, maxYears);
+      const accrued = calculateAccruedInterest(p.quantity, p.coupon, durationYears);
+      const next12 = calculateNext12MonthsInterest(p.quantity, p.coupon, maturityDate, today);
+
+      totalPar += p.quantity;
+      totalValue += p.currentValue;
+      totalInterest += next12;
+      durationWeighted += durationYears * p.quantity;
+      yieldWeighted += p.marketYield * p.currentValue;
+
+      const remaining = formatRemaining(maturityDate, today);
+      const name = p.description.replace(/\s+\d+\.\d+%\s+\d\d\/\d\d\/\d{4}$/, "");
+
+      html +=
+        '<div class="pos-card reveal">' +
+          '<div class="pos-head">' +
+            '<div>' +
+              '<div class="pos-name">' + name + '</div>' +
+              '<div class="pos-sub">' + p.assetClass + ' &middot; ' + p.cusip + '</div>' +
+              '<span class="pos-chip' + (remaining === "Matured" ? ' matured' : '') + '">' + remaining + '</span>' +
+            '</div>' +
+            '<div class="pos-value">' + formatCurrency(p.currentValue) + '</div>' +
+          '</div>' +
+          '<div class="pos-grid">' +
+            '<div><span class="k">Maturity</span><span class="v">' + p.maturity + '</span></div>' +
+            '<div><span class="k">Coupon</span><span class="v">' + p.coupon.toFixed(3) + '%</span></div>' +
+            '<div><span class="k">Quantity</span><span class="v">' + p.quantity.toLocaleString("en-US") + '</span></div>' +
+            '<div><span class="k">Market yield</span><span class="v">' + p.marketYield.toFixed(3) + '%</span></div>' +
+            '<div><span class="k">Accrued interest</span><span class="v credit">' + formatCurrency(accrued) + '</span></div>' +
+            '<div><span class="k">Duration</span><span class="v">' + formatYears(durationYears) + ' yrs</span></div>' +
+            '<div><span class="k">3rd party price</span><span class="v">' + p.price.toFixed(3) + '</span></div>' +
+            '<div><span class="k">Call status</span><span class="v">' + p.callStatus + '</span></div>' +
+          '</div>' +
+        '</div>';
+    });
+
+    document.getElementById("positions-list").innerHTML = html;
+    document.getElementById("sum-value").textContent = formatCurrency(totalValue);
+    document.getElementById("sum-count").textContent = POSITIONS.length;
+    document.getElementById("sum-par").textContent = formatNumber(totalPar);
+    document.getElementById("sum-interest").textContent = formatCurrency(totalInterest);
+    document.getElementById("sum-yield").textContent = (totalValue > 0 ? yieldWeighted / totalValue : 0).toFixed(3) + "%";
+    document.getElementById("sum-duration").textContent = formatYears(totalPar > 0 ? durationWeighted / totalPar : 0);
+  }
+
+  function scheduleDailyRefresh() {
+    const now = new Date();
+    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const delay = Math.max(1000, nextMidnight.getTime() - now.getTime());
+    setTimeout(function () {
+      render();
+      setInterval(render, MS_PER_DAY);
+    }, delay);
+  }
+
+  render();
+  scheduleDailyRefresh();
+})();
+</script>
 </body>
 </html>
